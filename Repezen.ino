@@ -14,9 +14,6 @@ void setup() {
   pinMode(13,OUTPUT);
   // ソフトウェアシリアルの初期化
   mySerial.begin(9600);
-  // 「こんにちは。シリアルモニターで文字を入力します。」と発声する
-  //mySerial.print("konnitiwa.siriaru'mo'nita-de/mo'ziwo nyuuryoku'simasu.");
-  //mySerial.print("\r");
 }
  
 void loop() {
@@ -29,6 +26,13 @@ void loop() {
   delayMicroseconds( 10 ); //
   digitalWrite( trigPin, LOW );
   Duration = pulseIn( echoPin, HIGH ); //センサからの入力
+  if (Duration > 0) {
+    Duration = Duration/2; //往復距離を半分にする
+    Distance = Duration*340*100/1000000; // 音速を340m/sに設定
+    Serial.print("Distance:");
+    Serial.print(Distance);
+    Serial.println(" cm");
+  }
 
   if(!digitalRead(SW)){
     mySerial.print("zikandayo.baibai.");
@@ -39,13 +43,6 @@ void loop() {
     digitalWrite(13,LOW);
   }
   
-  if (Duration > 0) {
-    Duration = Duration/2; //往復距離を半分にする
-    Distance = Duration*340*100/1000000; // 音速を340m/sに設定
-    Serial.print("Distance:");
-    Serial.print(Distance);
-    Serial.println(" cm");
-  }
   if(Distance<25&&flg){
     mySerial.print("kusaiyo.");
     mySerial.print("\r");
@@ -54,7 +51,8 @@ void loop() {
     mySerial.print("tikaiyo");
     mySerial.print("\r");
   }
- 
+
+  
   // 音声合成LSIからシリアルモニターへ
   while (mySerial.available() > 0) {
     char c = mySerial.read();
